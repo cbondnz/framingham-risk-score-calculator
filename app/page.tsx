@@ -6,10 +6,28 @@ import NavButtons from "@/components/NavButtons";
 
 export default function Home() {
   const [activeStep, setActiveStep] = useState(1);
-  const [gender, setGender] = useState<String>("");
+  const [gender, setGender] = useState<string>("");
+  const [errorState, setErrorState] = useState<boolean>(false);
+
   useEffect(() => {
     console.log(gender);
   }, [gender]);
+
+  const checkSelected = () => {
+    let result = false;
+    switch (activeStep) {
+      case 1:
+        result = true;
+        break;
+      case 2:
+        gender != "" && (result = true);
+        break;
+      default:
+        break;
+    }
+
+    return result;
+  };
 
   // Clicking the "Get Started" button on the home screen moves to the first form page
   const handleClickGettingStarted = () => {
@@ -18,8 +36,12 @@ export default function Home() {
 
   // Check if end state is not reached and increment the step by 1
   const handleClickNext = () => {
-    if (activeStep != 7) {
-      setActiveStep(activeStep + 1);
+    if (checkSelected()) {
+      if (activeStep != 7) {
+        setActiveStep(activeStep + 1);
+      }
+    } else {
+      setErrorState(true);
     }
   };
 
@@ -37,13 +59,14 @@ export default function Home() {
   };
 
   const handleSetGender = (selectedValue: string) => {
+    setErrorState(false);
     setGender(selectedValue);
   };
 
   return (
     <main>
       {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
-      {activeStep == 2 && <Gender onGender={handleSetGender} />}
+      {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
       {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} />}
     </main>
   );
