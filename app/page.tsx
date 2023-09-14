@@ -257,11 +257,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (activeStep == 7) {
-      console.log(gender, age, smoker, totalChol, hdlChol, treated, bloodPressure);
-      console.log("score: " + score, "riskPct: " + riskPct, "riskPctSymbol: " + riskPctSymbol, "errorState: " + errorState);
-    }
+    console.log(errorState);
+    console.log(gender);
     console.log(activeStep);
+    console.log(checkSelected());
   }, [activeStep]);
 
   // Checks which step and if a form value has been entered
@@ -314,9 +313,9 @@ export default function Home() {
           calcRisk();
         }
         setActiveStep(activeStep + 1);
-      } else {
-        setErrorState(true);
       }
+    } else {
+      setErrorState(true);
     }
   };
 
@@ -464,14 +463,48 @@ export default function Home() {
 
   return (
     <main>
-      {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
-      {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
-      {activeStep == 3 && <Age onAge={handleSetAge} showError={errorState} age={age} />}
-      {activeStep == 4 && <Smoker onSmoker={handleSetSmoker} showError={errorState} smoker={smoker} />}
-      {activeStep == 5 && <Cholesterol onHDLChol={handleSetHDLChol} onTotalChol={handleSetTotalChol} showError={errorState} totalChol={totalChol} hdlChol={hdlChol} />}
-      {activeStep == 6 && <BloodPressure onTreated={handleSetTreated} onBloodPressure={handleSetBloodPressure} showError={errorState} treated={treated} bloodPressure={bloodPressure} />}
-      {activeStep == 7 && <Results score={score} riskPct={riskPct} riskPctSymbol={riskPctSymbol} />}
-      {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} activeStep={activeStep} />}
+      <section>
+        {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
+        {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
+        {activeStep == 3 && <Age onAge={handleSetAge} showError={errorState} age={age} />}
+        {activeStep == 4 && <Smoker onSmoker={handleSetSmoker} showError={errorState} smoker={smoker} />}
+        {activeStep == 5 && <Cholesterol onHDLChol={handleSetHDLChol} onTotalChol={handleSetTotalChol} showError={errorState} totalChol={totalChol} hdlChol={hdlChol} />}
+        {activeStep == 6 && <BloodPressure onTreated={handleSetTreated} onBloodPressure={handleSetBloodPressure} showError={errorState} treated={treated} bloodPressure={bloodPressure} />}
+        {activeStep == 7 && <Results score={score} riskPct={riskPct} riskPctSymbol={riskPctSymbol} />}
+        {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} activeStep={activeStep} />}
+      </section>
+      <aside>
+        <h3>Selected Options</h3>
+        <ul>
+          <li>
+            Gender: <span id="stat-gender">{gender != "" && gender}</span>
+          </li>
+          <li>
+            Age: <span id="stat-age"></span>
+          </li>
+          <li>
+            Smoker: <span id="stat-smoker"></span>
+          </li>
+          <li>
+            Total Cholesterol: <span id="stat-ctotal"></span>
+          </li>
+          <li>
+            HDL Cholesterol: <span id="stat-chdl"></span>
+          </li>
+          <li>
+            Blood Pressure Type: <span id="stat-bloodType"></span>
+          </li>
+          <li>
+            Blood Pressure: <span id="stat-blood"></span>
+          </li>
+        </ul>
+        <div id="risk">
+          <hr />
+          <h3>
+            10 year risk: <span id="stat-risk"></span>
+          </h3>
+        </div>
+      </aside>
     </main>
   );
 }
