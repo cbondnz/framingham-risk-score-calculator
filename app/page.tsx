@@ -9,6 +9,28 @@ import Cholesterol from "@/components/Cholesterol";
 import BloodPressure from "@/components/BloodPressure";
 import Results from "@/components/Results";
 
+interface ScoringData {
+  [gender: string]: {
+    ageScore: Array<[number, number, number]>;
+    tChol: Array<{
+      age: [number, number];
+      tCholScore: Array<[number, number, number]>;
+    }>;
+    smokerScore: Array<[number, number, number, number]>;
+    hdlScore: Array<[number, number, number]>;
+    bpScore: Array<[number, number, number, number]>;
+    risk: Array<[number, number, number]>;
+  };
+}
+
+interface RiskCalculationInputs {
+  ageScore: number | null;
+  smokerScore: number | null;
+  totalCholScore: number | null;
+  hdlScore: number | null;
+  bloodPressureScore: number | null;
+}
+
 export default function Home() {
   const [activeStep, setActiveStep] = useState<number>(1);
   const [gender, setGender] = useState<string>("");
@@ -23,10 +45,232 @@ export default function Home() {
   const [riskPctSymbol, setRiskPctSymbol] = useState<string>("");
   const [errorState, setErrorState] = useState<boolean>(false);
 
+  const scoring: ScoringData = {
+    female: {
+      // lower age, upper age, score
+      ageScore: [
+        [20, 34, -7],
+        [35, 39, -3],
+        [40, 44, 0],
+        [45, 49, 3],
+        [50, 54, 6],
+        [55, 59, 8],
+        [60, 64, 10],
+        [65, 69, 12],
+        [70, 74, 14],
+        [75, 79, 16],
+      ],
+      // lower age, upper age -> lower mg/dL, upper mg/dL, score
+      tChol: [
+        {
+          age: [20, 39],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 4],
+            [200, 239, 8],
+            [249, 279, 11],
+            [280, Infinity, 13],
+          ],
+        },
+        {
+          age: [40, 49],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 3],
+            [200, 239, 6],
+            [249, 279, 8],
+            [280, Infinity, 10],
+          ],
+        },
+        {
+          age: [50, 59],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 2],
+            [200, 239, 4],
+            [249, 279, 5],
+            [280, Infinity, 7],
+          ],
+        },
+        {
+          age: [60, 69],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 1],
+            [200, 239, 2],
+            [249, 279, 3],
+            [280, Infinity, 4],
+          ],
+        },
+        {
+          age: [70, 79],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 1],
+            [200, 239, 1],
+            [249, 279, 2],
+            [280, Infinity, 2],
+          ],
+        },
+      ],
+      // lower age, upper age, smoker score, non-smoker score
+      smokerScore: [
+        [20, 39, 9, 0],
+        [40, 49, 7, 0],
+        [50, 59, 4, 0],
+        [60, 69, 2, 0],
+        [70, 79, 1, 0],
+      ],
+      // lower mg/dL, uppper mg/dL, score
+      hdlScore: [
+        [60, Infinity, -1],
+        [50, 59, 0],
+        [40, 49, 1],
+        [0, 39, 2],
+      ],
+      // lower mmHg, upper mmHg, treated score, untreated score
+      bpScore: [
+        [0, 119, 0, 0],
+        [120, 129, 3, 1],
+        [130, 139, 4, 2],
+        [140, 159, 5, 3],
+        [160, Infinity, 6, 4],
+      ],
+      // lower total score, upper total score, risk percentage
+      risk: [
+        [Number.NEGATIVE_INFINITY, 8, -1],
+        [9, 12, 1],
+        [13, 14, 2],
+        [15, 15, 3],
+        [16, 16, 4],
+        [17, 17, 5],
+        [18, 18, 6],
+        [19, 19, 8],
+        [20, 20, 11],
+        [21, 21, 14],
+        [22, 22, 17],
+        [23, 23, 22],
+        [24, 24, 27],
+        [25, Infinity, 30],
+      ],
+    },
+    male: {
+      // lower age, upper age, score
+      ageScore: [
+        [20, 34, -9],
+        [35, 39, -4],
+        [40, 44, 0],
+        [45, 49, 3],
+        [50, 54, 6],
+        [55, 59, 8],
+        [60, 64, 10],
+        [65, 69, 11],
+        [70, 74, 12],
+        [75, 79, 13],
+      ],
+      // lower age, upper age -> lower mg/dL, upper mg/dL, score
+      tChol: [
+        {
+          age: [20, 39],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 4],
+            [200, 239, 7],
+            [249, 279, 9],
+            [280, Infinity, 11],
+          ],
+        },
+        {
+          age: [40, 49],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 3],
+            [200, 239, 5],
+            [249, 279, 6],
+            [280, Infinity, 8],
+          ],
+        },
+        {
+          age: [50, 59],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 2],
+            [200, 239, 3],
+            [249, 279, 4],
+            [280, Infinity, 5],
+          ],
+        },
+        {
+          age: [60, 69],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 1],
+            [200, 239, 1],
+            [249, 279, 2],
+            [280, Infinity, 3],
+          ],
+        },
+        {
+          age: [70, 79],
+          tCholScore: [
+            [0, 159, 0],
+            [160, 199, 0],
+            [200, 239, 0],
+            [249, 279, 1],
+            [280, Infinity, 1],
+          ],
+        },
+      ],
+      // lower age, upper age, smoker score, non-smoker score
+      smokerScore: [
+        [20, 39, 8, 0],
+        [40, 49, 5, 0],
+        [50, 59, 3, 0],
+        [60, 69, 1, 0],
+        [70, 79, 1, 0],
+      ],
+      // lower mg/dL, uppper mg/dL, score
+      hdlScore: [
+        [60, Infinity, -1],
+        [50, 59, 0],
+        [40, 49, 1],
+        [0, 39, 2],
+      ],
+      // lower mmHg, upper mmHg, treated score, untreated score
+      bpScore: [
+        [0, 119, 0, 0],
+        [120, 129, 1, 0],
+        [130, 139, 2, 1],
+        [140, 159, 2, 1],
+        [160, Infinity, 3, 2],
+      ],
+      // lower total score, upper total score, risk percentage
+      risk: [
+        [Number.NEGATIVE_INFINITY, 0, -1],
+        [1, 4, 1],
+        [5, 6, 2],
+        [7, 7, 3],
+        [8, 8, 4],
+        [9, 9, 5],
+        [10, 10, 6],
+        [11, 11, 8],
+        [12, 12, 10],
+        [13, 13, 12],
+        [14, 14, 16],
+        [15, 15, 20],
+        [16, 16, 25],
+        [17, Infinity, 30],
+      ],
+    },
+  };
+
   useEffect(() => {
-    console.log(gender);
-    console.log(totalChol);
-  }, [totalChol]);
+    if (activeStep == 7) {
+      console.log(gender, age, smoker, totalChol, hdlChol, treated, bloodPressure);
+      console.log("score: " + score, "riskPct: " + riskPct, "riskPctSymbol: " + riskPctSymbol, "errorState: " + errorState);
+    }
+    console.log(activeStep);
+  }, [activeStep]);
 
   // Checks which step and if a form value has been entered
   // @returns - boolean true if form field is selected else false
@@ -55,6 +299,9 @@ export default function Home() {
           result = true;
         }
         break;
+      case 7:
+        result = true;
+        break;
       default:
         break;
     }
@@ -71,10 +318,13 @@ export default function Home() {
   const handleClickNext = () => {
     if (checkSelected()) {
       if (activeStep != 7) {
+        if (activeStep == 6) {
+          calcRisk();
+        }
         setActiveStep(activeStep + 1);
+      } else {
+        setErrorState(true);
       }
-    } else {
-      setErrorState(true);
     }
   };
 
@@ -133,10 +383,78 @@ export default function Home() {
     setBloodPressure(selectedValue);
   };
 
-  // Sets the total cholesterol based on the value received from the form inputs
-  const calcRisk = (selectedValue: string) => {
-    setErrorState(false);
-    setBloodPressure(selectedValue);
+  const calcAgeScore = () => {
+    return getElement(scoring[gender].ageScore, 2, age);
+  };
+
+  const calcSmokerScore = () => {
+    let smokerScoreResult: number | null;
+    if (smoker == "true") {
+      smokerScoreResult = getElement(scoring[gender].smokerScore, 2, age);
+    } else {
+      smokerScoreResult = getElement(scoring[gender].smokerScore, 3, age);
+    }
+
+    return smokerScoreResult;
+  };
+
+  const calcTotalCholScore = () => {
+    let result;
+    scoring[gender].tChol.find((element) => {
+      if (age >= element.age[0] && age <= element.age[1]) {
+        result = element.tCholScore.find((tChol) => {
+          if (parseInt(totalChol) >= tChol[0] && parseInt(totalChol) <= tChol[1]) {
+            return tChol;
+          }
+        });
+      }
+    });
+
+    return result ? result[2] : null;
+  };
+
+  const calcHDLScore = () => {
+    return getElement(scoring[gender].hdlScore, 2, parseInt(hdlChol));
+  };
+
+  const calcBloodPressureScore = () => {
+    const bloodIndex = treated === "true" ? 2 : 3;
+    return getElement(scoring[gender].bpScore, bloodIndex, parseInt(bloodPressure));
+  };
+
+  const calcRisk = () => {
+    if (scoring[gender]) {
+      const ageScore = calcAgeScore();
+      const smokerScore = calcSmokerScore();
+      const totalCholScore = calcTotalCholScore();
+      const hdlScore = calcHDLScore();
+      const bloodPressureScore = calcBloodPressureScore();
+
+      if (ageScore !== null && smokerScore !== null && totalCholScore !== null && hdlScore != null && bloodPressureScore != null) {
+        const totalScore = ageScore + smokerScore + totalCholScore + hdlScore + bloodPressureScore;
+
+        const totalRisk = getElement(scoring[gender].risk, 2, totalScore)?.toString();
+        setRiskPct(totalRisk != null ? totalRisk : "");
+
+        const totalRiskInt = parseInt(totalRisk != null ? totalRisk : "");
+
+        if (totalRiskInt == -1) {
+          setScore("less than 1%");
+          setRiskPctSymbol("< 1%");
+        } else if (totalRiskInt == 30) {
+          setScore("over 30%");
+          setRiskPctSymbol("> 30%");
+        } else {
+          setScore(totalRisk + "%");
+          setRiskPctSymbol(totalRisk + "%");
+        }
+      }
+    }
+  };
+
+  const getElement = (array: Array<[number, number, number]> | Array<[number, number, number, number]>, index: number, value: number): number | null => {
+    const result = array.find(([lower, upper]) => value >= lower && value <= upper);
+    return result ? result[index] : null;
   };
 
   return (
