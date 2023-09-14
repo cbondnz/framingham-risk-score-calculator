@@ -2,13 +2,41 @@
 import React, { useState } from "react";
 import Welcome from "@/components/Welcome";
 import Gender from "@/components/Gender";
+import NavButtons from "@/components/NavButtons";
 
 export default function Home() {
-  const [activeStep, setActiveStep] = React.useState(1);
+  const [activeStep, setActiveStep] = useState(1);
 
+  // Clicking the "Get Started" button on the home screen moves to the first form page
   const handleClickGettingStarted = () => {
     setActiveStep(2);
   };
 
-  return <main>{activeStep == 1 ? <Welcome onClick={handleClickGettingStarted} /> : <Gender />}</main>;
+  // Check if end state is not reached and increment the step by 1
+  const handleClickNext = () => {
+    if (activeStep != 7) {
+      setActiveStep(activeStep + 1);
+    }
+  };
+
+  // Check if start state is not reached and decrement the step by 1
+  const handleClickPrevious = () => {
+    if (activeStep != 1) {
+      setActiveStep(activeStep - 1);
+    }
+  };
+
+  // Resets scorings and go back to home page (step 1)
+  const handleClickStartOver = () => {
+    // TODO reset scorings
+    setActiveStep(1);
+  };
+
+  return (
+    <main>
+      {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
+      {activeStep == 2 && <Gender />}
+      {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} />}
+    </main>
+  );
 }
