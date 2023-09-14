@@ -4,11 +4,13 @@ import Welcome from "@/components/Welcome";
 import Gender from "@/components/Gender";
 import NavButtons from "@/components/NavButtons";
 import Age from "@/components/Age";
+import Smoker from "@/components/Smoker";
 
 export default function Home() {
   const [activeStep, setActiveStep] = useState(1);
   const [gender, setGender] = useState<string>("");
   const [age, setAge] = useState(20);
+  const [smoker, setSmoker] = useState("");
   const [errorState, setErrorState] = useState<boolean>(false);
 
   useEffect(() => {
@@ -28,6 +30,9 @@ export default function Home() {
         break;
       case 3:
         result = true;
+        break;
+      case 4:
+        smoker != "" && (result = true);
         break;
       default:
         break;
@@ -77,11 +82,18 @@ export default function Home() {
     setAge(selectedValue);
   };
 
+  // Sets the gender based on the value received from the form inputs
+  const handleSetSmoker = (selectedValue: string) => {
+    setErrorState(false);
+    setSmoker(selectedValue);
+  };
+
   return (
     <main>
       {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
       {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
       {activeStep == 3 && <Age onAge={handleSetAge} showError={errorState} age={age} />}
+      {activeStep == 4 && <Smoker onSmoker={handleSetSmoker} showError={errorState} smoker={smoker} />}
       {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} />}
     </main>
   );
