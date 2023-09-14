@@ -7,6 +7,7 @@ import Age from "@/components/Age";
 import Smoker from "@/components/Smoker";
 import Cholesterol from "@/components/Cholesterol";
 import BloodPressure from "@/components/BloodPressure";
+import Results from "@/components/Results";
 
 export default function Home() {
   const [activeStep, setActiveStep] = useState<number>(1);
@@ -17,6 +18,9 @@ export default function Home() {
   const [hdlChol, setHDLChol] = useState<string>("");
   const [treated, setTreated] = useState<string>("");
   const [bloodPressure, setBloodPressure] = useState<string>("");
+  const [score, setScore] = useState<string>("");
+  const [riskPct, setRiskPct] = useState<string>("");
+  const [riskPctSymbol, setRiskPctSymbol] = useState<string>("");
   const [errorState, setErrorState] = useState<boolean>(false);
 
   useEffect(() => {
@@ -128,6 +132,13 @@ export default function Home() {
     setErrorState(false);
     setBloodPressure(selectedValue);
   };
+
+  // Sets the total cholesterol based on the value received from the form inputs
+  const calcRisk = (selectedValue: string) => {
+    setErrorState(false);
+    setBloodPressure(selectedValue);
+  };
+
   return (
     <main>
       {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
@@ -136,7 +147,8 @@ export default function Home() {
       {activeStep == 4 && <Smoker onSmoker={handleSetSmoker} showError={errorState} smoker={smoker} />}
       {activeStep == 5 && <Cholesterol onHDLChol={handleSetHDLChol} onTotalChol={handleSetTotalChol} showError={errorState} totalChol={totalChol} hdlChol={hdlChol} />}
       {activeStep == 6 && <BloodPressure onTreated={handleSetTreated} onBloodPressure={handleSetBloodPressure} showError={errorState} treated={treated} bloodPressure={bloodPressure} />}
-      {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} />}
+      {activeStep == 7 && <Results score={score} riskPct={riskPct} riskPctSymbol={riskPctSymbol} />}
+      {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} activeStep={activeStep} />}
     </main>
   );
 }
