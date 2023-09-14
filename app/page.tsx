@@ -5,17 +5,21 @@ import Gender from "@/components/Gender";
 import NavButtons from "@/components/NavButtons";
 import Age from "@/components/Age";
 import Smoker from "@/components/Smoker";
+import Cholesterol from "@/components/Cholesterol";
 
 export default function Home() {
   const [activeStep, setActiveStep] = useState(1);
   const [gender, setGender] = useState<string>("");
   const [age, setAge] = useState(20);
   const [smoker, setSmoker] = useState("");
+  const [totalChol, setTotalChol] = useState<string>("");
+  const [hdlChol, setHDLChol] = useState<string>("");
   const [errorState, setErrorState] = useState<boolean>(false);
 
   useEffect(() => {
     console.log(gender);
-  }, [gender]);
+    console.log(totalChol);
+  }, [totalChol]);
 
   // Checks which step and if a form value has been entered
   // @returns - boolean true if form field is selected else false
@@ -33,6 +37,11 @@ export default function Home() {
         break;
       case 4:
         smoker != "" && (result = true);
+        break;
+      case 5:
+        if (hdlChol != "" && totalChol != "") {
+          result = true;
+        }
         break;
       default:
         break;
@@ -82,10 +91,22 @@ export default function Home() {
     setAge(selectedValue);
   };
 
-  // Sets the gender based on the value received from the form inputs
+  // Sets the smoker based on the value received from the form inputs
   const handleSetSmoker = (selectedValue: string) => {
     setErrorState(false);
     setSmoker(selectedValue);
+  };
+
+  // Sets the total cholesterol based on the value received from the form inputs
+  const handleSetTotalChol = (selectedValue: string) => {
+    setErrorState(false);
+    setTotalChol(selectedValue);
+  };
+
+  // Sets the total cholesterol based on the value received from the form inputs
+  const handleSetHDLChol = (selectedValue: string) => {
+    setErrorState(false);
+    setHDLChol(selectedValue);
   };
 
   return (
@@ -94,6 +115,7 @@ export default function Home() {
       {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
       {activeStep == 3 && <Age onAge={handleSetAge} showError={errorState} age={age} />}
       {activeStep == 4 && <Smoker onSmoker={handleSetSmoker} showError={errorState} smoker={smoker} />}
+      {activeStep == 5 && <Cholesterol onHDLChol={handleSetHDLChol} onTotalChol={handleSetTotalChol} showError={errorState} totalChol={totalChol} hdlChol={hdlChol} />}
       {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} />}
     </main>
   );
