@@ -23,14 +23,6 @@ interface ScoringData {
   };
 }
 
-interface RiskCalculationInputs {
-  ageScore: number | null;
-  smokerScore: number | null;
-  totalCholScore: number | null;
-  hdlScore: number | null;
-  bloodPressureScore: number | null;
-}
-
 export default function Home() {
   const [activeStep, setActiveStep] = useState<number>(1);
   const [gender, setGender] = useState<string>("");
@@ -337,7 +329,7 @@ export default function Home() {
 
   // Resets scorings and go back to home page (step 1)
   const handleClickStartOver = () => {
-    // TODO reset scorings
+    startOver();
     setActiveStep(1);
   };
 
@@ -455,6 +447,19 @@ export default function Home() {
   const getElement = (array: Array<[number, number, number]> | Array<[number, number, number, number]>, index: number, value: number): number | null => {
     const result = array.find(([lower, upper]) => value >= lower && value <= upper);
     return result ? result[index] : null;
+  };
+
+  const startOver = () => {
+    setGender("");
+    setAge(20);
+    setSmoker("");
+    setTotalChol("");
+    setHDLChol("");
+    setTreated("");
+    setBloodPressure("");
+    setScore("");
+    setRiskPct("");
+    setRiskPctSymbol("");
   };
 
   return (
