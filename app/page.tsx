@@ -3,16 +3,20 @@ import React, { useState, useEffect } from "react";
 import Welcome from "@/components/Welcome";
 import Gender from "@/components/Gender";
 import NavButtons from "@/components/NavButtons";
+import Age from "@/components/Age";
 
 export default function Home() {
   const [activeStep, setActiveStep] = useState(1);
   const [gender, setGender] = useState<string>("");
+  const [age, setAge] = useState(20);
   const [errorState, setErrorState] = useState<boolean>(false);
 
   useEffect(() => {
     console.log(gender);
   }, [gender]);
 
+  // Checks which step and if a form value has been entered
+  // @returns - boolean true if form field is selected else false
   const checkSelected = () => {
     let result = false;
     switch (activeStep) {
@@ -21,6 +25,9 @@ export default function Home() {
         break;
       case 2:
         gender != "" && (result = true);
+        break;
+      case 3:
+        result = true;
         break;
       default:
         break;
@@ -58,15 +65,23 @@ export default function Home() {
     setActiveStep(1);
   };
 
+  // Sets the gender based on the value received from the form inputs
   const handleSetGender = (selectedValue: string) => {
     setErrorState(false);
     setGender(selectedValue);
+  };
+
+  // Sets the gender based on the value received from the form inputs
+  const handleSetAge = (selectedValue: number) => {
+    setErrorState(false);
+    setAge(selectedValue);
   };
 
   return (
     <main>
       {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
       {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
+      {activeStep == 3 && <Age onAge={handleSetAge} showError={errorState} age={age} />}
       {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} />}
     </main>
   );
