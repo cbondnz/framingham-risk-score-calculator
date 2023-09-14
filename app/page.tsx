@@ -6,14 +6,17 @@ import NavButtons from "@/components/NavButtons";
 import Age from "@/components/Age";
 import Smoker from "@/components/Smoker";
 import Cholesterol from "@/components/Cholesterol";
+import BloodPressure from "@/components/BloodPressure";
 
 export default function Home() {
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState<number>(1);
   const [gender, setGender] = useState<string>("");
-  const [age, setAge] = useState(20);
-  const [smoker, setSmoker] = useState("");
+  const [age, setAge] = useState<number>(20);
+  const [smoker, setSmoker] = useState<string>("");
   const [totalChol, setTotalChol] = useState<string>("");
   const [hdlChol, setHDLChol] = useState<string>("");
+  const [treated, setTreated] = useState<string>("");
+  const [bloodPressure, setBloodPressure] = useState<string>("");
   const [errorState, setErrorState] = useState<boolean>(false);
 
   useEffect(() => {
@@ -40,6 +43,11 @@ export default function Home() {
         break;
       case 5:
         if (hdlChol != "" && totalChol != "") {
+          result = true;
+        }
+        break;
+      case 6:
+        if (treated != "" && bloodPressure != "") {
           result = true;
         }
         break;
@@ -109,6 +117,17 @@ export default function Home() {
     setHDLChol(selectedValue);
   };
 
+  // Sets the total cholesterol based on the value received from the form inputs
+  const handleSetTreated = (selectedValue: string) => {
+    setErrorState(false);
+    setTreated(selectedValue);
+  };
+
+  // Sets the total cholesterol based on the value received from the form inputs
+  const handleSetBloodPressure = (selectedValue: string) => {
+    setErrorState(false);
+    setBloodPressure(selectedValue);
+  };
   return (
     <main>
       {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
@@ -116,6 +135,7 @@ export default function Home() {
       {activeStep == 3 && <Age onAge={handleSetAge} showError={errorState} age={age} />}
       {activeStep == 4 && <Smoker onSmoker={handleSetSmoker} showError={errorState} smoker={smoker} />}
       {activeStep == 5 && <Cholesterol onHDLChol={handleSetHDLChol} onTotalChol={handleSetTotalChol} showError={errorState} totalChol={totalChol} hdlChol={hdlChol} />}
+      {activeStep == 6 && <BloodPressure onTreated={handleSetTreated} onBloodPressure={handleSetBloodPressure} showError={errorState} treated={treated} bloodPressure={bloodPressure} />}
       {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} />}
     </main>
   );
