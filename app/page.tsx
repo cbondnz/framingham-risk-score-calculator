@@ -256,13 +256,6 @@ export default function Home() {
     },
   };
 
-  useEffect(() => {
-    console.log(errorState);
-    console.log(gender);
-    console.log(activeStep);
-    console.log(checkSelected());
-  }, [activeStep]);
-
   // Checks which step and if a form value has been entered
   // @returns - boolean true if form field is selected else false
   const checkSelected = () => {
@@ -462,7 +455,7 @@ export default function Home() {
   };
 
   return (
-    <main>
+    <main className="text-primary p-4 bg-gradient-to-b from-bgAccentDark from-0% to-bgAccentLight to-100% sm:p-0">
       <section>
         {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
         {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
@@ -473,38 +466,40 @@ export default function Home() {
         {activeStep == 7 && <Results score={score} riskPct={riskPct} riskPctSymbol={riskPctSymbol} />}
         {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} activeStep={activeStep} />}
       </section>
-      <aside>
-        <h3>Selected Options</h3>
-        <ul>
-          <li>
-            Gender: <span id="stat-gender">{gender != "" && gender}</span>
-          </li>
-          <li>
-            Age: <span id="stat-age"></span>
-          </li>
-          <li>
-            Smoker: <span id="stat-smoker"></span>
-          </li>
-          <li>
-            Total Cholesterol: <span id="stat-ctotal"></span>
-          </li>
-          <li>
-            HDL Cholesterol: <span id="stat-chdl"></span>
-          </li>
-          <li>
-            Blood Pressure Type: <span id="stat-bloodType"></span>
-          </li>
-          <li>
-            Blood Pressure: <span id="stat-blood"></span>
-          </li>
-        </ul>
-        <div id="risk">
-          <hr />
-          <h3>
-            10 year risk: <span id="stat-risk"></span>
-          </h3>
-        </div>
-      </aside>
+      {activeStep != 1 && (
+        <aside className="hidden md:block">
+          <h3>Selected Options</h3>
+          <ul>
+            <li>
+              Gender: <span id="stat-gender">{gender != "" && gender}</span>
+            </li>
+            <li>
+              Age: <span id="stat-age"></span>
+            </li>
+            <li>
+              Smoker: <span id="stat-smoker"></span>
+            </li>
+            <li>
+              Total Cholesterol: <span id="stat-ctotal"></span>
+            </li>
+            <li>
+              HDL Cholesterol: <span id="stat-chdl"></span>
+            </li>
+            <li>
+              Blood Pressure Type: <span id="stat-bloodType"></span>
+            </li>
+            <li>
+              Blood Pressure: <span id="stat-blood"></span>
+            </li>
+          </ul>
+          <div id="risk">
+            <hr />
+            <h3>
+              10 year risk: <span id="stat-risk"></span>
+            </h3>
+          </div>
+        </aside>
+      )}
     </main>
   );
 }
