@@ -23,11 +23,11 @@ const BloodPressure: FC<ChildComponentProps> = ({ onTreated, onBloodPressure, sh
     <section>
       <FormHeading heading="Please enter your blood pressure and type of reading" />
       <FormError text="Please enter your blood pressure reading in the text box" showError={showError} />
-      <label htmlFor="treated" className="text-3xl leading-loose font-semibold grid grid-cols-radio gap-2 sm:text-2xl mb-5 xl:text-4xl xl:mb-8">
+      <label htmlFor="treated" className="text-3xl leading-loose font-semibold grid grid-cols-radio gap-2 sm:text-2xl mb-5 xl:text-3xl xl:mb-8">
         <input type="radio" id="treated" name="type" value="true" onChange={handleSelect} checked={treated == "true" ? true : false} />
         Treated
       </label>
-      <label htmlFor="untreated" className="text-3xl leading-loose font-semibold grid grid-cols-radio gap-2 sm:text-2xl mb-5 xl:text-4xl xl:mb-8">
+      <label htmlFor="untreated" className="text-3xl leading-loose font-semibold grid grid-cols-radio gap-2 sm:text-2xl mb-5 xl:text-3xl xl:mb-8">
         <input type="radio" id="untreated" name="type" value="false" onChange={handleSelect} checked={treated == "false" ? true : false} />
         Untreated
       </label>
