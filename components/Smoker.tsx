@@ -17,11 +17,11 @@ const Smoker: FC<ChildComponentProps> = ({ onSmoker, showError, smoker }) => {
     <section>
       <FormHeading heading="Do you smoke cigarettes?" />
       <FormError text="Please select your smoker status using the radio buttons" showError={showError} />
-      <label htmlFor="non-smoker">
+      <label htmlFor="non-smoker" className="text-3xl leading-loose font-semibold grid grid-cols-radio gap-2 sm:text-2xl mb-5 xl:text-4xl xl:mb-10">
         <input type="radio" id="non-smoker" name="smoker" value="false" onChange={handleSelect} checked={smoker == "false" ? true : false} />
         Non-smoker
       </label>
-      <label htmlFor="smoker">
+      <label htmlFor="smoker" className="text-3xl leading-loose font-semibold grid grid-cols-radio gap-2 sm:text-2xl xl:text-4xl">
         <input type="radio" id="smoker" name="smoker" value="true" onChange={handleSelect} checked={smoker == "true" ? true : false} />
         Smoker
       </label>

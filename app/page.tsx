@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Welcome from "@/components/Welcome";
 import Gender from "@/components/Gender";
 import NavButtons from "@/components/NavButtons";
@@ -8,6 +8,7 @@ import Smoker from "@/components/Smoker";
 import Cholesterol from "@/components/Cholesterol";
 import BloodPressure from "@/components/BloodPressure";
 import Results from "@/components/Results";
+import SelectedOptions from "@/components/SelectedOptions";
 
 interface ScoringData {
   [gender: string]: {
@@ -37,6 +38,7 @@ export default function Home() {
   const [riskPctSymbol, setRiskPctSymbol] = useState<string>("");
   const [errorState, setErrorState] = useState<boolean>(false);
 
+  // Scoring data taken from the wiki
   const scoring: ScoringData = {
     female: {
       // lower age, upper age, score
@@ -295,11 +297,13 @@ export default function Home() {
 
   // Clicking the "Get Started" button on the home screen moves to the first form page
   const handleClickGettingStarted = () => {
+    setErrorState(false);
     setActiveStep(2);
   };
 
   // Check if end state is not reached and increment the step by 1
   const handleClickNext = () => {
+    setErrorState(false);
     if (checkSelected()) {
       if (activeStep != 7) {
         if (activeStep == 6) {
@@ -314,6 +318,7 @@ export default function Home() {
 
   // Check if start state is not reached and decrement the step by 1
   const handleClickPrevious = () => {
+    setErrorState(false);
     if (activeStep != 1) {
       setActiveStep(activeStep - 1);
     }
@@ -367,10 +372,12 @@ export default function Home() {
     setBloodPressure(selectedValue);
   };
 
+  // Calculates the age score from the data taken from the wiki and the input value
   const calcAgeScore = () => {
     return getElement(scoring[gender].ageScore, 2, age);
   };
 
+  // Calculates the smoker score from the data taken from the wiki and the input value
   const calcSmokerScore = () => {
     let smokerScoreResult: number | null;
     if (smoker == "true") {
@@ -382,6 +389,7 @@ export default function Home() {
     return smokerScoreResult;
   };
 
+  // Calculates the total Cholesterol score from the data taken from the wiki and the input value
   const calcTotalCholScore = () => {
     let result;
     scoring[gender].tChol.find((element) => {
@@ -397,15 +405,18 @@ export default function Home() {
     return result ? result[2] : null;
   };
 
+  // Calculates the hdl cholesterol score from the data taken from the wiki and the input value
   const calcHDLScore = () => {
     return getElement(scoring[gender].hdlScore, 2, parseInt(hdlChol));
   };
 
+  // Calculates the blood pressure score from the data taken from the wiki and the input value
   const calcBloodPressureScore = () => {
     const bloodIndex = treated === "true" ? 2 : 3;
     return getElement(scoring[gender].bpScore, bloodIndex, parseInt(bloodPressure));
   };
 
+  // Calculates the total risk score from the data taken from the wiki and the input value
   const calcRisk = () => {
     if (scoring[gender]) {
       const ageScore = calcAgeScore();
@@ -436,11 +447,13 @@ export default function Home() {
     }
   };
 
+  // Maps through the data score and finds the relevant score for the values passed in
   const getElement = (array: Array<[number, number, number]> | Array<[number, number, number, number]>, index: number, value: number): number | null => {
     const result = array.find(([lower, upper]) => value >= lower && value <= upper);
     return result ? result[index] : null;
   };
 
+  // Resets all scores back to defaults
   const startOver = () => {
     setGender("");
     setAge(20);
@@ -455,51 +468,27 @@ export default function Home() {
   };
 
   return (
-    <main className="text-primary p-4 bg-gradient-to-b from-bgAccentDark from-0% to-bgAccentLight to-100% sm:p-0">
-      <section>
-        {activeStep == 1 && <Welcome onClick={handleClickGettingStarted} />}
-        {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
-        {activeStep == 3 && <Age onAge={handleSetAge} showError={errorState} age={age} />}
-        {activeStep == 4 && <Smoker onSmoker={handleSetSmoker} showError={errorState} smoker={smoker} />}
-        {activeStep == 5 && <Cholesterol onHDLChol={handleSetHDLChol} onTotalChol={handleSetTotalChol} showError={errorState} totalChol={totalChol} hdlChol={hdlChol} />}
-        {activeStep == 6 && <BloodPressure onTreated={handleSetTreated} onBloodPressure={handleSetBloodPressure} showError={errorState} treated={treated} bloodPressure={bloodPressure} />}
-        {activeStep == 7 && <Results score={score} riskPct={riskPct} riskPctSymbol={riskPctSymbol} />}
-        {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} activeStep={activeStep} />}
-      </section>
-      {activeStep != 1 && (
-        <aside className="hidden md:block">
-          <h3>Selected Options</h3>
-          <ul>
-            <li>
-              Gender: <span id="stat-gender">{gender != "" && gender}</span>
-            </li>
-            <li>
-              Age: <span id="stat-age"></span>
-            </li>
-            <li>
-              Smoker: <span id="stat-smoker"></span>
-            </li>
-            <li>
-              Total Cholesterol: <span id="stat-ctotal"></span>
-            </li>
-            <li>
-              HDL Cholesterol: <span id="stat-chdl"></span>
-            </li>
-            <li>
-              Blood Pressure Type: <span id="stat-bloodType"></span>
-            </li>
-            <li>
-              Blood Pressure: <span id="stat-blood"></span>
-            </li>
-          </ul>
-          <div id="risk">
-            <hr />
-            <h3>
-              10 year risk: <span id="stat-risk"></span>
-            </h3>
+    <main className="text-primary p-4 bg-gradient-to-b from-bgAccentDark from-0% to-bgAccentLight to-100% sm:p-0 h-screen">
+      <section className="h-full">
+        {activeStep == 1 ? (
+          <Welcome onClick={handleClickGettingStarted} />
+        ) : (
+          <div className="sm:bg-bgHalf sm:bg-no-repeat sm:bg-right-top h-full bg-half xl:bg-contain xl:bg-bg">
+            <div className="sm:max-w-2xl sm:mx-auto sm:flex sm:items-center h-full lg:max-w-4xl sm:gap-x-4 md:items-start md:pt-40 xl:max-w-7xl xl:pb-60">
+              <div className="sm:w-2/3 xl:flex xl:flex-col xl:justify-between xl:h-full">
+                {activeStep == 2 && <Gender onGender={handleSetGender} showError={errorState} gender={gender} />}
+                {activeStep == 3 && <Age onAge={handleSetAge} showError={errorState} age={age} />}
+                {activeStep == 4 && <Smoker onSmoker={handleSetSmoker} showError={errorState} smoker={smoker} />}
+                {activeStep == 5 && <Cholesterol onHDLChol={handleSetHDLChol} onTotalChol={handleSetTotalChol} showError={errorState} totalChol={totalChol} hdlChol={hdlChol} />}
+                {activeStep == 6 && <BloodPressure onTreated={handleSetTreated} onBloodPressure={handleSetBloodPressure} showError={errorState} treated={treated} bloodPressure={bloodPressure} />}
+                {activeStep == 7 && <Results score={score} riskPct={riskPct} riskPctSymbol={riskPctSymbol} />}
+                {activeStep != 1 && <NavButtons onClickNext={handleClickNext} onClickPrevious={handleClickPrevious} onClickStartOver={handleClickStartOver} activeStep={activeStep} />}
+              </div>
+              <SelectedOptions gender={gender} age={age} smoker={smoker} totalChol={totalChol} hdlChol={hdlChol} treated={treated} bloodPressure={bloodPressure} risk={riskPct} />
+            </div>
           </div>
-        </aside>
-      )}
+        )}
+      </section>
     </main>
   );
 }

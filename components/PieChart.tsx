@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 interface Props {
   riskPct: string;
@@ -6,7 +6,33 @@ interface Props {
 }
 
 export default function PieChart({ riskPct, riskPctSymbol }: Props) {
+  const [screenSize, setScreenSize] = useState("");
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    // Function to update screen size when the component mounts
+    const updateScreenSize = () => {
+      if (window.innerWidth < 640) {
+        setScreenSize("small");
+      } else if (window.innerWidth >= 640 && window.innerWidth < 1024) {
+        setScreenSize("medium");
+      } else {
+        setScreenSize("large");
+      }
+    };
+
+    // Call the function initially to set the screen size
+    updateScreenSize();
+
+    // Add an event listener to update screen size on window resize
+    window.addEventListener("resize", updateScreenSize);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("resize", updateScreenSize);
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -20,9 +46,19 @@ export default function PieChart({ riskPct, riskPctSymbol }: Props) {
     }
 
     // Define variables
-    const x = 150;
-    const y = 150;
-    const radius = 150;
+    let x = 0;
+    let y = 0;
+    let radius = 0;
+
+    if (screenSize == "large") {
+      x = 150;
+      y = 150;
+      radius = 150;
+    } else if (screenSize == "medium" || screenSize == "small") {
+      x = 100;
+      y = 100;
+      radius = 100;
+    }
     const startAngle = 0;
     const endAngle = 2 * Math.PI;
     const circleColor = "#80DEEA";
@@ -54,7 +90,12 @@ export default function PieChart({ riskPct, riskPctSymbol }: Props) {
     ctx.fillStyle = "black";
     ctx.font = "bold 20px Lucida Sans";
     ctx.fillText(riskPSymbol, labX, labY);
-  }, []);
+  }, [screenSize]);
 
-  return <canvas ref={canvasRef} width="300" height="300"></canvas>;
+  return (
+    <>
+      {screenSize == "large" && <canvas ref={canvasRef} width={300} height={300} className="flex mx-auto "></canvas>}
+      {(screenSize == "medium" || screenSize == "small") && <canvas ref={canvasRef} width={200} height={200} className="flex mx-auto "></canvas>}
+    </>
+  );
 }

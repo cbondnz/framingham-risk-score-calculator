@@ -6,5 +6,5 @@ interface Props {
 }
 
 export default function FormError({ text, showError }: Props) {
-  return <h2 className={showError ? "visible" : "invisible"}>{text}</h2>;
+  return <h2 className={`${showError ? "visible" : "invisible"} my-5 text-error`}>{text}</h2>;
 }

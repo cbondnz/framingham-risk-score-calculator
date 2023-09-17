@@ -17,11 +17,11 @@ const Gender: FC<ChildComponentProps> = ({ onGender, showError, gender }) => {
     <section>
       <FormHeading heading="What is your gender?" />
       <FormError text="Please select a gender using the radio buttons" showError={showError} />
-      <label>
+      <label className="text-3xl leading-loose font-semibold grid grid-cols-radio gap-2 sm:text-2xl mb-5 xl:text-4xl xl:mb-10">
         <input type="radio" id="male" name="gender" value="male" onChange={handleSelect} checked={gender == "male" ? true : false} />
         Male
       </label>
-      <label>
+      <label className="text-3xl leading-loose font-semibold grid grid-cols-radio gap-2 sm:text-2xl xl:text-4xl">
         <input type="radio" id="female" name="gender" value="female" onChange={handleSelect} checked={gender == "female" ? true : false} />
         Female
       </label>
